@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>写一个自己的Unix Shell（1）搭建一个框架 | Lcf&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+    <!-- <link rel="icon" href="favicon.ico"> -->
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAACl1JREFUeF7t2L2u3FcVhvE9Z05ObExwREqE0tHwJXEHKERCNDFIiMvgCrgHOhp6LiARIjR8JKkoEIqQEEVEkGLEl6id4zN/NEcKSmWf2exizXp/J6Vnba/3eZcfj7MbP/nZNvwggEAkgR0BRPYuNAK3BAjAISAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIIKP/yYjeO/53yc9i2cbNtp4z47BkSIIAzLO3klZ98PMZhG3d2wPEP/n4/xtULJ/9WBs6LAAGcV1933vb49/22bePe5eX44Ve/NL742c+M68Nh7HbP/iZwO7Pfj9//6z/jp3/6YBy/CfjpS4AAmnZ7K4DDNh7euxp/+P63x6svPTgp6W8e/2O8/tavx/XNza00aOAkfGfzYQI4m6pOW/QTAXzu3tV4543XxtdeeflO3wAOh21c7S/GWx9+NL779rvj6c02jl8aCOA0/ufyaQI4l6ZO3PPTAnjv0bfGVz7/8Pbr/MVz/glw/B9/+91u/PzDx+PR2++MawI4kfx5fZwAzquvO2/7fwvgr4/Ho18QwJ2Bn+kHCeBMi3ve2gTwPEJ+/UiAAJreAQE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKc58WwG/feG18/ZWXx8c3h7E7/sIzfg7bNl7c78ebf/lofO+X746nN9vtzFYlmD2WEiCApTjrPPaJAB7euxp//MF3xhce3D9puff+9s/xzTd/Na5vbsZutyOAk+idz4cJ4Hy6OmnTWwFs27j/wuX40Te+PF596cG4Phy/ATz7K8DxG8D9y/343d//PX78/p/Hzebv/pPAn9mHCeDMCjt53eOf3ydPxjhsYzzn6///3j7O7C/GePHq5N/OwHkRIIDz6mtq28uLi3Fx/EZwx+mjJw5jG0+P0vDTmgABtK5XOASeTYAAXAgCwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR+C/PoYml4nIu8YAAAAASUVORK5CYII=" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+  
+  <script src="/js/quotes.js"></script>
+  <meta name="description" content="熟悉 Unix&#x2F;Linux 系统的朋友都清楚，我们通常都通过 Shell 程序和 Unix&#x2F;Linux 系统打交道，比如查看文件列表，我们会输入ls命令，切换目录，我们会输入cd命令等等，那么 Shell 程序是如何实现的呢？下面就让我们用C语言写一个自己的 Shell 程序。  第一步：搭建一个框架 我们写一个框架，实现下图的样子。    从上面的图中我们可以看到：当执行我们的myshell程序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="写一个自己的Unix Shell（1）搭建一个框架">
+<meta property="og:url" content="http://example.com/2024/08/15/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-1/index.html">
+<meta property="og:site_name" content="Lcf&#39;s Blog">
+<meta property="og:description" content="熟悉 Unix&#x2F;Linux 系统的朋友都清楚，我们通常都通过 Shell 程序和 Unix&#x2F;Linux 系统打交道，比如查看文件列表，我们会输入ls命令，切换目录，我们会输入cd命令等等，那么 Shell 程序是如何实现的呢？下面就让我们用C语言写一个自己的 Shell 程序。  第一步：搭建一个框架 我们写一个框架，实现下图的样子。    从上面的图中我们可以看到：当执行我们的myshell程序">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/Kapture%202024-08-17%20at%2013.50.42.gif">
+<meta property="og:image" content="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/2024-08-25_01-15.png">
+<meta property="article:published_time" content="2024-08-15T15:42:00.000Z">
+<meta property="article:modified_time" content="2024-08-24T17:23:57.554Z">
+<meta property="article:author" content="longrichli">
+<meta property="article:tag" content="C语言">
+<meta property="article:tag" content="写一个自己的Unix Shell">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/Kapture%202024-08-17%20at%2013.50.42.gif"><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="wrapper">
+    <header id="header">
+  <h1 id="title">
+    <a href="/">Lcf&#39;s Blog</a>
+  </h1>
+  <nav>
+    
+    
+      
+      <a class="nav-link" href="/">Home</a>
+    
+      
+        <span class="nav-spacer">|</span>
+      
+      <a class="nav-link" href="/archives">Archives</a>
+    
+    
+  </nav>
+  <div>
+      <!-- <a href="javascript: void(0)" id=""></a> -->
+      <div id="quote" class="article-entry"></div>
+      <div id="author" class="article-entry"></div>
+  </div>
+  
+</header>
+
+    <div id="content">
+      <article id="post-写一个自己的UnixShell-1" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      写一个自己的Unix Shell（1）搭建一个框架
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2024-08-15T15:42:00.000Z" itemprop="datePublished">2024-08-15 11:42 pm</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        <p>        熟悉 Unix&#x2F;Linux 系统的朋友都清楚，我们通常都通过 Shell 程序和 Unix&#x2F;Linux 系统打交道，比如查看文件列表，我们会输入<code>ls</code>命令，切换目录，我们会输入<code>cd</code>命令等等，那么 Shell 程序是如何实现的呢？下面就让我们用C语言写一个自己的 Shell 程序。</p>
+<h2 id="第一步：搭建一个框架"><a href="#第一步：搭建一个框架" class="headerlink" title="第一步：搭建一个框架"></a>第一步：搭建一个框架</h2><p>        我们写一个框架，实现下图的样子。</p>
+<p><img src="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/Kapture%202024-08-17%20at%2013.50.42.gif"></p>
+<p>        从上面的图中我们可以看到：当执行我们的myshell程序后，当我们只键入回车键，空格等这些空白内容时，程序不断输出 <code>myshell# </code>字符串，当我们输入一行非空白内容再按回车时，程序会打印我们输入的内容，然后再打印<code>myshell# </code>字符串后等待下一次输入。</p>
+<p>        接下来我们实现上面的程序，首先我们写一个循环，在这个循环中打印 <code>myshell# </code>字符串后等待用户输入数据。当用户输入空白内容时，程序接着打印<code>myshell# </code>字符串等待用户下次输入，当用户输入非空白内容时，程序打印用户输入的内容，接着打印<code>myshell# </code>字符串等待用户下次输入。</p>
+<p>        要实现上面的流程，我们需要两个重要功能，就是从终端读取一行字符和判断字符串是否是空白字符串。</p>
+<p>        我们用<code>getline()</code>函数来实现从终端中读取一行字符的功能。下面是<code>getline()</code>函数的实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">des:</span></span><br><span class="line"><span class="comment">    从给定文件中读取一行字符串</span></span><br><span class="line"><span class="comment">param:</span></span><br><span class="line"><span class="comment">    returnStr[IN, OUT]: 用来存放从fp中读取到的一行字符串</span></span><br><span class="line"><span class="comment">    returnStrBufSz[IN, OUT]: 用来保存returnStr的缓冲区大小，如果为NULL，</span></span><br><span class="line"><span class="comment">                             表示调用者不关心returnStr的缓冲区大小，就不会设置它。</span></span><br><span class="line"><span class="comment">    fp[IN]: 待读取的文件</span></span><br><span class="line"><span class="comment">return: </span></span><br><span class="line"><span class="comment">    成功: 读取到的字符串的实际大小</span></span><br><span class="line"><span class="comment">    失败: -1</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">getline</span><span class="params">(<span class="type">char</span> **returnStr, <span class="type">size_t</span> *returnStrBufSz, FILE *fp)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ret = <span class="number">-1</span>;</span><br><span class="line">    <span class="type">ssize_t</span> nread = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> c;</span><br><span class="line">    <span class="type">size_t</span> bufSz = <span class="number">512</span>;</span><br><span class="line">    <span class="keyword">if</span>(<span class="literal">NULL</span> == returnStr || <span class="literal">NULL</span> == fp) &#123;</span><br><span class="line">        <span class="keyword">goto</span> __finish;</span><br><span class="line">    &#125;</span><br><span class="line">    *returnStr = <span class="built_in">malloc</span>(bufSz);</span><br><span class="line">    <span class="keyword">if</span>(*returnStr == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">goto</span> __finish;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>((c = getc(fp)) != EOF) &#123;</span><br><span class="line">        <span class="comment">// 当开辟的空间不够用的时候, 将空间扩为原来的一倍</span></span><br><span class="line">        <span class="keyword">if</span>(nread &gt;= bufSz) &#123;</span><br><span class="line">            bufSz = bufSz * <span class="number">2</span>;</span><br><span class="line">            *returnStr = <span class="built_in">realloc</span>(*returnStr, bufSz);</span><br><span class="line">            <span class="keyword">if</span>(*returnStr == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        (*returnStr)[nread++] = c;</span><br><span class="line">        <span class="comment">// 当读到换行符时, 跳出循环, 读取一行完毕</span></span><br><span class="line">        <span class="keyword">if</span>(c == <span class="string">&#x27;\n&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    (*returnStr)[nread] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span>(returnStrBufSz != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        *returnStrBufSz = bufSz;</span><br><span class="line">    &#125;</span><br><span class="line">    ret = <span class="number">0</span>;</span><br><span class="line">__finish:</span><br><span class="line">    <span class="keyword">if</span>(ret &lt; <span class="number">0</span> &amp;&amp; *returnStr != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">free</span>(*returnStr);</span><br><span class="line">        *returnStr = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret == <span class="number">0</span> ? nread : ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>        我们结合例子来看一下<code>getline()</code>函数的原理和使用方法，下面是一个使用<code>getline()</code>函数的例子。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">getlineUsage</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">char</span> *strBuf = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="type">size_t</span> strBufSz = <span class="number">0</span>;</span><br><span class="line">    <span class="type">ssize_t</span> nread = <span class="number">0</span>;</span><br><span class="line">    nread = getline(&amp;strBuf, &amp;strBufSz, <span class="built_in">stdin</span>);</span><br><span class="line">    <span class="keyword">if</span>(nread &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;getlineUsage() getline() error\n&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span>(strBufSz != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">free</span>(strBufSz);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(nread == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;read end\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;strBuf: %s\n&quot;</span>, strBuf);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;strBufSz: %zu\n&quot;</span>, strBufSz);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;nread: %zd\n&quot;</span>, nread);</span><br><span class="line">    <span class="keyword">if</span>(strBuf != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">free</span>(strBuf);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>        在<code>getline()</code>函数的使用例子<code>getlineUsage()</code>函数中，我们定义了一个指针strBuf，一个size_t型的变量strBufSz，一个ssize_t型的变量 nread。接着将strBuf的地址，strBufSz的地址和stdin（即标准输入）传入了<code>getline()</code>函数中，在<code>getline()</code>函数中，会用第一个参数returnStr来接收strBuf的地址，对strBuf的地址进行解引用可以拿到strBuf指针指向的内容，一开始strBuf指向NULL（因为我们在<code>getlineUsage()</code>函数中对strBuf指针的初始值赋值为NULL），然后为strBuf开辟默认512字节大小的内存，用来存放从标准输入stdin读取的字符。接着用标准库函数<code>getc()</code>来不断从stdin中读取一个字符放入strBuf开辟的内存中。当strBuf开辟的内存不够用时，我们用<code>realloc()</code>函数来扩容内存，直到读到一个换行符<code>\n</code>,我们结束对stdin的读取。此时，strBuf指向的内存中已经存放了一行字符，于是我们为strBuf指向的内存放一个结束标志<code>\0</code>，将strBuf开辟的内存大小记录在strBufSz中（<code>getline()</code>函数的第二个参数returnStrBufSz接收了我们传入的strBufSz变量的地址，对returnStrBufSz解引用就可以拿到strBufSz变量的内容并可以重新赋值），返回读取到的字符数。当<code>getline()</code>函数返回后，我们用nread接收读取的字符数量，当读到的字符数小于0时，说明出现了错误，当读到的字符数等于0时，说明在标准输入stdin读取到了EOF文件结束标志，我们打印读取结束，然后返回，当读到的字符数大于0，我们打印读到的字符，strBuf开辟的内存大小和读到的字符数，接着释放strBuf的内存，例子结束。</p>
+<p>        通过上面的描述，我们可以明白如何实现读取一行字符的功能，下面我们来看一下第二个重要功能：判断一个字符串是否为空白字符串。</p>
+<p>        我们用<code>isSpaceStr()</code>函数来判断一个字符串是否为空白字符串。下面是<code>isSpaceStr()</code>函数的实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">des: </span></span><br><span class="line"><span class="comment">    判断是否是空白字符串, </span></span><br><span class="line"><span class="comment">    (如果给定自符串仅包含 空格, tab符号, 换行, 回车, 我们就认为是空白字符串)</span></span><br><span class="line"><span class="comment">param:</span></span><br><span class="line"><span class="comment">    str[IN]: 给定字符串</span></span><br><span class="line"><span class="comment">return:</span></span><br><span class="line"><span class="comment">    是空白字符串: 1</span></span><br><span class="line"><span class="comment">    不是空白字符串: 0</span></span><br><span class="line"><span class="comment">    出错: -1</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">isSpaceStr</span><span class="params">(<span class="type">char</span> *str)</span> &#123;</span><br><span class="line">    <span class="type">int</span> spaceStr = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(str == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(*str != <span class="string">&#x27;\0&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span>(*str != <span class="string">&#x27; &#x27;</span> &amp;&amp; *str != <span class="string">&#x27;\t&#x27;</span> &amp;&amp; *str != <span class="string">&#x27;\n&#x27;</span> &amp;&amp; *str != <span class="string">&#x27;\r&#x27;</span>) &#123;</span><br><span class="line">            spaceStr = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        str++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> spaceStr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>        判断是否为空白字符串的函数非常简单，就是遍历给定的字符串，当给定的字符串含有空格、制表符、换行符和回车符之外的字符时，我们就认为它不是一个空白的字符串，否则就认为它是一个空白的字符串。</p>
+<p>        到目前为止，我们实现了读取一行字符和判断给定字符串是否为空白字符串的功能，接着就在一个循环中从标准输入读取一行字符，判断一下是否为空白字符串，如果是空白字符串就继续从标准输入中读取，否则就打印非空白字符串后继续下一次的读取。在这个过程中打印一下字符串<code>myshell# </code>就完成了制作自己的Shell的第一步：框架的搭建。</p>
+<p>        实现上段描述的代码如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="type">char</span> *cmdString = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="type">ssize_t</span> nread = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;myshell# &quot;</span>);</span><br><span class="line">        nread = getline(&amp;cmdString, <span class="literal">NULL</span>, <span class="built_in">stdin</span>);</span><br><span class="line">        <span class="keyword">if</span>(nread &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;main() getline()\n&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span>(cmdString != <span class="literal">NULL</span>) &#123;</span><br><span class="line">                <span class="built_in">free</span>(cmdString);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(nread == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;\nBey~\n&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(cmdString == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;main() cmdString = NULL\n&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(isSpaceStr(cmdString) == <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="built_in">free</span>(cmdString);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, cmdString);</span><br><span class="line">        <span class="keyword">if</span>(cmdString != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">free</span>(cmdString);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>        至此，我们完成了制作自己的Shell的第一步“搭建一个框架”的全部步骤。</p>
+<p>附：</p>
+<p>        欢迎关注我的微信公众号^_^。</p>
+<img title="" src="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/2024-08-25_01-15.png" alt="" width="340" data-align="center">
+
+      
+    </div>
+    
+    
+    <div class="article-category">
+      
+      
+      
+        <b>Tags:</b>
+        <a class="article-tag-none-link" href="/tags/C%E8%AF%AD%E8%A8%80/" rel="tag">C语言</a>, <a class="article-tag-none-link" href="/tags/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84Unix-Shell/" rel="tag">写一个自己的Unix Shell</a>
+      
+    </div>
+    
+    
+  </div>
+</article>
+
+  
+<nav id="article-nav" class="article-nav">
+  
+    <span id="article-nav-newer" class="article-nav-link-wrap newer"></span>
+  
+  
+    <a href="/2024/03/01/RFB%E5%8D%8F%E8%AE%AE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap older">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          RFB协议原理分析
+        
+      </div>
+    </a>
+  
+</nav>
+
+
+
+
+  <!-- <script>
+  var idcomments_acct = '00000000000000000000000000000001';
+  var idcomments_post_id;
+  var idcomments_post_url;
+  </script>
+  <span id="IDCommentsPostTitle" style="display:none"></span>
+  <script type='text/javascript' src='https://www.intensedebate.com/js/genericCommentWrapperV2.js'></script> -->
+  <div id="gitalk-container"></div>
+  <script src="/js/md5.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script>
+      var gitalk = new Gitalk({
+      clientID: 'Ov23lilyHLOdLBrFF3yy',
+      clientSecret: '7822a963c115ba84b0c9b85f311abd46afa24dc6',
+      repo: 'BlogCommends',
+      owner: 'longrichli',
+      admin: ['longrichli'],
+      id: md5(location.pathname),      // Ensure uniqueness and length less than 50
+      distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+      gitalk.render('gitalk-container')
+  </script>
+
+
+
+    </div>
+  </div>
+  
+  
+<link rel="stylesheet" href="/css/comments.css">
+
+
+
+
+
+
+<div id="settings-container">
+  <div id="dark-mode">dark</div>
+  <hr>
+  <div id="sans-font">sans</div>
+</div>
+<script type="text/javascript">
+let d=document,r=d.documentElement.style,f=r.setProperty.bind(r),l=localStorage,s=l.getItem('s')||(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),n=l.getItem('n'),m=d.getElementById("dark-mode"),b=()=>{f('--bg-color','#fafafa');f('--code-bg-color','#f4f4f4');f('--text-color','#212121');f('--secondary-color','#808080');f('--tertiary-color','#b0b0b0');f('--link-color','#b5c8cf');f('--link-hover-color','#618794');f('--link-bg-color','#dae4e7');f('--selection-color','#dae4e7');m.innerHTML="dark"},c=()=>{f('--bg-color','#212121');f('--code-bg-color','#292929');f('--text-color','#bbb');f('--secondary-color','#707070');f('--tertiary-color','#6e6e6e');f('--link-color','#4d6b75');f('--link-hover-color','#96b1bb');f('--link-bg-color','#5d828e');f('--selection-color','#acc1c9');m.innerHTML="light"},o=d.getElementById("sans-font"),e=()=>{f('--body-stack','"Lora", "Georgia", "Times New Roman", serif');o.innerHTML="sans"},g=()=>{f('--body-stack','"Lato", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Verdana", sans-serif');o.innerHTML="serif"};m.onclick=()=>{if(s==2){s=1;l.setItem('s',s);c()}else{s=2;l.setItem('s',s);b()}};o.onclick=()=>{if(n==2){n=1;l.setItem('n',n);g()}else{n=2;l.setItem('n',n);e()}};if(!s){s=2;l.setItem('s',2)};if(s==1){c()};if(!n){n=2;l.setItem('n',2)};if(n==1){g()};
+</script>
+
+
+
+
+</body>
+</html>

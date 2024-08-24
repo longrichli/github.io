@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Lcf&#39;s Blog</title>
+  <title>Tag: 写一个自己的Unix Shell | Lcf&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
   
@@ -21,7 +21,7 @@
   <script src="/js/quotes.js"></script>
   <meta property="og:type" content="website">
 <meta property="og:title" content="Lcf&#39;s Blog">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:url" content="http://example.com/tags/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84Unix-Shell/index.html">
 <meta property="og:site_name" content="Lcf&#39;s Blog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="longrichli">
@@ -57,102 +57,29 @@
     <div id="content">
       
     
-      <article id="post-写一个自己的UnixShell-1" class="article article-type-post" itemprop="blogPost" itemscope>
-  <div class="article-inner">
     
-      <header class="article-header">
-        
+    
+      <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <time class="archive-article-date" datetime="2024-08-15T15:42:00.000Z" itemprop="datePublished">2024-08-15</time>
+
+      
   
-    <h2 class="article-title" itemprop="name">
+    <h2 class="archive-article-title" itemprop="name">
       <a href="/2024/08/15/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-1/">写一个自己的Unix Shell（1）搭建一个框架</a>
       
     </h2>
   
 
 
-        <div class="article-meta">
-          <time class="article-date" datetime="2024-08-15T15:42:00.000Z" itemprop="datePublished">2024-08-15 11:42 pm</time>
-
-          
-        </div>
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-        熟悉 Unix/Linux 系统的朋友都清楚，我们通常都通过 Shell 程序和 Unix/Linux 系统打交道，比如查看文件列表，我们会输入ls命令，切换目录，我们会输入cd命令等等，那么 Shell 程序是如何实现的呢？下面就让我们用C语言写一个自己的 Shell 程序。
-
-第一步：搭建一个框架
-我们写一个框架，实现下图的样子。
-
-
-
-从上面的图中我们可以看到：当执行我们的myshell程序后，当我们只键入回车键，空格等这些空白内容时，程序不断输出 myshell# 字符串，当我们输入一行非空白内容再按回车时，程序会打印我们输入的内容，然后再打印myshell# 字符串后等待下一次输入。
-      
-    </div>
-    
-      <div class="article-more-link">
-        <a href="/2024/08/15/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-1/#more">阅读更多</a>
-      </div>
-    
-    
-    
-      <!-- <footer class="article-footer">
-        <a href="/2024/08/15/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-1/#idc-container">Comments</a>
-      </footer> -->
-    
+    </header>
   </div>
 </article>
 
-
-
-    
-      <article id="post-RFB协议原理分析" class="article article-type-post" itemprop="blogPost" itemscope>
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 class="article-title" itemprop="name">
-      <a href="/2024/03/01/RFB%E5%8D%8F%E8%AE%AE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">RFB协议原理分析</a>
-      
-    </h2>
-  
-
-
-        <div class="article-meta">
-          <time class="article-date" datetime="2024-03-01T14:38:35.000Z" itemprop="datePublished">2024-03-01 10:38 pm</time>
-
-          
-        </div>
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-        RFB(The Remote Framebuffer Protocol) 协议介绍
-RFB的中文名字叫做”远程帧缓冲区协议”, 它用于访问远程的用户界面, 允许客户端查看和操作远程的窗口系统。它主要是将远程窗口系统的帧缓冲区（可以理解我屏幕中的像素区）发送给客户端，因而客户端就可以看到远程窗口的界面了。客户端也会向运行RFB协议的服务端发送一些事件，比如鼠标事件，键盘事件，这样就客户端就可以操作远程的窗口系统了。VNC（Virtual Network Computing）就是基于的RFB协议，它用于远程控制桌面，类似于蒲公英。
-
-RFB协议的监听端口
-RFB协议的默认监听端口位 5190，对于
-      
-    </div>
-    
-      <div class="article-more-link">
-        <a href="/2024/03/01/RFB%E5%8D%8F%E8%AE%AE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#more">阅读更多</a>
-      </div>
     
     
-    
-      <!-- <footer class="article-footer">
-        <a href="/2024/03/01/RFB%E5%8D%8F%E8%AE%AE%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#idc-container">Comments</a>
-      </footer> -->
-    
-  </div>
-</article>
-
-
-
+        </div></section>
     
 
 
@@ -166,6 +93,10 @@ RFB协议的默认监听端口位 5190，对于
 
 
 
+
+<script type="text/javascript">
+let tgl=(s)=>{x=document.getElementsByName("expand");for(let i=0;i<x.length;i++)x[i].checked=s.checked;}
+</script>
 
 
 
