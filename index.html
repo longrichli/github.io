@@ -57,6 +57,51 @@
     <div id="content">
       
     
+      <article id="post-写一个自己的UnixShell-3" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="name">
+      <a href="/2024/08/26/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-3/">写一个自己的Unix Shell（3）实现cd和exit命令</a>
+      
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2024-08-26T14:37:47.000Z" itemprop="datePublished">2024-08-26 10:37 pm</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        在《写一个自己的Unix Shell（2）将读入的字符变成命令》这篇文章中，我们实现了将输入的字符转成命令的功能。例如当我们输入ls时，我们的Shell程序会开辟一个子进程，将ls字符串转成字符串数组，然后调用execvp()函数去环境变量PATH中的目录中查找ls对应的可执行文件并执行它。对于其他常见的命令也是这个过程，但有两个命令除外，那就是cd命令和exit命令。我们知道：cd命令的作用是切换目录，exit命令是退出Shell程序。
+
+对于cd命令来说，它切换的是Shell程序的工作目录，什么是工作目录？工作目录就是你现在在操作系统的哪个目录下，比如你在/root/目录下，那么/root
+      
+    </div>
+    
+      <div class="article-more-link">
+        <a href="/2024/08/26/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-3/#more">阅读更多</a>
+      </div>
+    
+    
+    
+      <!-- <footer class="article-footer">
+        <a href="/2024/08/26/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-3/#idc-container">Comments</a>
+      </footer> -->
+    
+  </div>
+</article>
+
+
+
+    
       <article id="post-写一个自己的UnixShell-2" class="article article-type-post" itemprop="blogPost" itemscope>
   <div class="article-inner">
     

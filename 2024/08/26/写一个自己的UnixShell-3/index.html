@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>写一个自己的Unix Shell（3）实现cd和exit命令 | Lcf&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+    <!-- <link rel="icon" href="favicon.ico"> -->
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAACl1JREFUeF7t2L2u3FcVhvE9Z05ObExwREqE0tHwJXEHKERCNDFIiMvgCrgHOhp6LiARIjR8JKkoEIqQEEVEkGLEl6id4zN/NEcKSmWf2exizXp/J6Vnba/3eZcfj7MbP/nZNvwggEAkgR0BRPYuNAK3BAjAISAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIILl90BAjADSAQTIAAgssXHQECcAMIBBMggODyRUeAANwAAsEECCC4fNERIAA3gEAwAQIIKP/yYjeO/53yc9i2cbNtp4z47BkSIIAzLO3klZ98PMZhG3d2wPEP/n4/xtULJ/9WBs6LAAGcV1933vb49/22bePe5eX44Ve/NL742c+M68Nh7HbP/iZwO7Pfj9//6z/jp3/6YBy/CfjpS4AAmnZ7K4DDNh7euxp/+P63x6svPTgp6W8e/2O8/tavx/XNza00aOAkfGfzYQI4m6pOW/QTAXzu3tV4543XxtdeeflO3wAOh21c7S/GWx9+NL779rvj6c02jl8aCOA0/ufyaQI4l6ZO3PPTAnjv0bfGVz7/8Pbr/MVz/glw/B9/+91u/PzDx+PR2++MawI4kfx5fZwAzquvO2/7fwvgr4/Ho18QwJ2Bn+kHCeBMi3ve2gTwPEJ+/UiAAJreAQE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKcwRQpYnaexBA7X6mtyOAaXRRgwTQtG4CaFrs4lgEsBholecIoEoTtfcggNr9TG9HANPoogYJoGndBNC02MWxCGAx0CrPEUCVJmrvQQC1+5nejgCm0UUNEkDTugmgabGLYxHAYqBVniOAKk3U3oMAavczvR0BTKOLGiSApnUTQNNiF8cigMVAqzxHAFWaqL0HAdTuZ3o7AphGFzVIAE3rJoCmxS6ORQCLgVZ5jgCqNFF7DwKo3c/0dgQwjS5qkACa1k0ATYtdHIsAFgOt8hwBVGmi9h4EULuf6e0IYBpd1CABNK2bAJoWuzgWASwGWuU5AqjSRO09CKB2P9PbEcA0uqhBAmhaNwE0LXZxLAJYDLTKc58WwG/feG18/ZWXx8c3h7E7/sIzfg7bNl7c78ebf/lofO+X746nN9vtzFYlmD2WEiCApTjrPPaJAB7euxp//MF3xhce3D9puff+9s/xzTd/Na5vbsZutyOAk+idz4cJ4Hy6OmnTWwFs27j/wuX40Te+PF596cG4Phy/ATz7K8DxG8D9y/343d//PX78/p/Hzebv/pPAn9mHCeDMCjt53eOf3ydPxjhsYzzn6///3j7O7C/GePHq5N/OwHkRIIDz6mtq28uLi3Fx/EZwx+mjJw5jG0+P0vDTmgABtK5XOASeTYAAXAgCwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR4AA3AACwQQIILh80REgADeAQDABAgguX3QECMANIBBMgACCyxcdAQJwAwgEEyCA4PJFR+C/PoYml4nIu8YAAAAASUVORK5CYII=" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+  
+  <script src="/js/quotes.js"></script>
+  <meta name="description" content="在《写一个自己的Unix Shell（2）将读入的字符变成命令》这篇文章中，我们实现了将输入的字符转成命令的功能。例如当我们输入ls时，我们的Shell程序会开辟一个子进程，将ls字符串转成字符串数组，然后调用execvp()函数去环境变量PATH中的目录中查找ls对应的可执行文件并执行它。对于其他常见的命令也是这个过程，但有两个命令除外，那就是cd命令和exit命令。我们知道：cd命令的作用是切">
+<meta property="og:type" content="article">
+<meta property="og:title" content="写一个自己的Unix Shell（3）实现cd和exit命令">
+<meta property="og:url" content="http://example.com/2024/08/26/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-3/index.html">
+<meta property="og:site_name" content="Lcf&#39;s Blog">
+<meta property="og:description" content="在《写一个自己的Unix Shell（2）将读入的字符变成命令》这篇文章中，我们实现了将输入的字符转成命令的功能。例如当我们输入ls时，我们的Shell程序会开辟一个子进程，将ls字符串转成字符串数组，然后调用execvp()函数去环境变量PATH中的目录中查找ls对应的可执行文件并执行它。对于其他常见的命令也是这个过程，但有两个命令除外，那就是cd命令和exit命令。我们知道：cd命令的作用是切">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/Kapture%202024-08-27%20at%2000.33.48.gif">
+<meta property="og:image" content="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/2024-08-25_01-15.png">
+<meta property="article:published_time" content="2024-08-26T14:37:47.000Z">
+<meta property="article:modified_time" content="2024-08-26T16:57:21.594Z">
+<meta property="article:author" content="longrichli">
+<meta property="article:tag" content="C语言">
+<meta property="article:tag" content="写一个自己的Unix Shell">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/Kapture%202024-08-27%20at%2000.33.48.gif"><meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="wrapper">
+    <header id="header">
+  <h1 id="title">
+    <a href="/">Lcf&#39;s Blog</a>
+  </h1>
+  <nav>
+    
+    
+      
+      <a class="nav-link" href="/">Home</a>
+    
+      
+        <span class="nav-spacer">|</span>
+      
+      <a class="nav-link" href="/archives">Archives</a>
+    
+    
+  </nav>
+  <div>
+      <!-- <a href="javascript: void(0)" id=""></a> -->
+      <div id="quote" class="article-entry"></div>
+      <div id="author" class="article-entry"></div>
+  </div>
+  
+</header>
+
+    <div id="content">
+      <article id="post-写一个自己的UnixShell-3" class="article article-type-post" itemprop="blogPost" itemscope>
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 class="article-title" itemprop="headline name">
+      写一个自己的Unix Shell（3）实现cd和exit命令
+    </h2>
+  
+
+
+        <div class="article-meta">
+          <time class="article-date" datetime="2024-08-26T14:37:47.000Z" itemprop="datePublished">2024-08-26 10:37 pm</time>
+
+          
+        </div>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        <p>        在《写一个自己的Unix Shell（2）将读入的字符变成命令》这篇文章中，我们实现了将输入的字符转成命令的功能。例如当我们输入<code>ls</code>时，我们的Shell程序会开辟一个子进程，将<code>ls</code>字符串转成字符串数组，然后调用<code>execvp()</code>函数去环境变量PATH中的目录中查找<code>ls</code>对应的可执行文件并执行它。对于其他常见的命令也是这个过程，但有两个命令除外，那就是<code>cd</code>命令和<code>exit</code>命令。我们知道：<code>cd</code>命令的作用是切换目录，<code>exit</code>命令是退出Shell程序。</p>
+<p>        对于<code>cd</code>命令来说，它切换的是Shell程序的工作目录，什么是工作目录？工作目录就是你现在在操作系统的哪个目录下，比如你在<code>/root/</code>目录下，那么<code>/root/</code>就是Shell进程的工作目录，你在<code>/home/hello/</code>目录下，<code>/home/hello/</code>就是Shell进程的工作目录，切换Shell进程的工作目录需要Shell程序的父进程来完成，因为如果是子进程切换工作目录切换的是子进程的，它不会影响到父进程的工作目录。当然，子进程可以继承父进程的工作目录，就是说假设父进程的工作目录是<code>/root/</code>，那么当父进程<code>fork()</code>出子进程后，子进程这时的工作目录也是<code>/root/</code>，但子进程之后再切换工作目录，这就与父进程无关了。</p>
+<p>        对于<code>exit</code>命令来说，它是退出Shell进程，那么它必须由Shell程序的父进程执行，因为是父进程在不断的等待输入，解析，开辟子进程执行命令，所以我们要实现在父进程中检测用户输入的是否是<code>exit</code>命令，如果是，那么就退出Shell程序。</p>
+<p>        综上，我们要在Shell程序的父进程中实现切换工作目录和退出Shell程序的功能。</p>
+<p>        我们用<code>chdir()</code>系统调用来实现切换进程当前工作目录的功能。下面看看<code>chdir()</code>函数的声明。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>     <span class="title function_">chdir</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *pathname)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>        <code>chdir()</code>系统调用的函数声明非常简单，它接受一个绝对路径或相对路径来设置工作目录，成功返回0，失败返回-1。</p>
+<p>        我们用<code>handleChangeDirCommand()</code>函数来实现解析<code>cd</code>命令并切换工作目录的功能，下面是<code>handleChangeDirCommand()</code>函数的实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">des:</span></span><br><span class="line"><span class="comment">    处理切换目录命令，如果cmdString是切换目录命令，就切换进程的工作目录</span></span><br><span class="line"><span class="comment">param:</span></span><br><span class="line"><span class="comment">    cmdString[IN]: 命令字符串</span></span><br><span class="line"><span class="comment">return:</span></span><br><span class="line"><span class="comment">    是切换目录命令，进行切换: 1</span></span><br><span class="line"><span class="comment">    不是切换目录命令: 0</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">handleChangeDirCommand</span><span class="params">(<span class="type">char</span> *cmdString)</span> &#123;</span><br><span class="line">    <span class="type">char</span> **argv = parseCmdString(cmdString);</span><br><span class="line">    <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> execChangDir = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span>(argv != <span class="literal">NULL</span> &amp;&amp; argv[<span class="number">0</span>] != <span class="literal">NULL</span> &amp;&amp; <span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;cd&quot;</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 处理cd命令</span></span><br><span class="line">        <span class="keyword">if</span>(argv[<span class="number">1</span>] == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="comment">// 切换工作目录到家目录</span></span><br><span class="line">            <span class="type">char</span> *homeDir = getenv(<span class="string">&quot;HOME&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span>(homeDir == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s: %s\n&quot;</span>, argv[<span class="number">0</span>], strerror(errno));</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span>(chdir(homeDir) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s: %s\n&quot;</span>, argv[<span class="number">0</span>], strerror(errno));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(argv[<span class="number">1</span>] != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span>(chdir(argv[<span class="number">1</span>]) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;%s: %s\n&quot;</span>, argv[<span class="number">0</span>], strerror(errno));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        execChangDir = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 释放内存</span></span><br><span class="line">    <span class="keyword">if</span>(argv) &#123;</span><br><span class="line">        <span class="keyword">while</span>(argv[i] != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">free</span>(argv[i]);</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">free</span>(argv);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> execChangDir;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>        在<code>handleChangeDirCommand()</code>函数的实现中，我们复用了<code>parseCmdString()</code>函数将命令字符串转成字符串数组方便我们后面判断。然后我们检查是否输入了<code>cd</code>命令，如果输入了<code>cd</code>命令并且<code>cd</code>命令的后面没有目标路径的话，我们切换到当前用户的家目录（用<code>getenv(&quot;HOME&quot;)</code>来获取当前用户的家目录，<code>getenv()</code>用来获取指定的环境变量的值，HOME是一个环境变量，就像PATH一样，只不过HOME环境变量存放的是当前用户家目录的字符串）。如果输入了<code>cd</code>命令，并且<code>cd</code>命令的后面存在一个目标路径的话，那我们就会使用<code>chdir()</code>函数将当前工作目录切换到目标目录。如果没有输入<code>cd</code>命令，就返回0。</p>
+<p>        我们用<code>handleExitCommand()</code>函数来实现对退出程序命令的处理，它的实现如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">des:</span></span><br><span class="line"><span class="comment">    处理退出命令，如果是退出命令，则退出程序</span></span><br><span class="line"><span class="comment">param:</span></span><br><span class="line"><span class="comment">    cmdString[IN]: 命令字符串</span></span><br><span class="line"><span class="comment">return:</span></span><br><span class="line"><span class="comment">    是退出命令: 直接退出</span></span><br><span class="line"><span class="comment">    不是退出命令: 0</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">handleExitCommand</span><span class="params">(<span class="type">char</span> *cmdString)</span> &#123;</span><br><span class="line">    <span class="type">char</span> **argv = parseCmdString(cmdString);</span><br><span class="line">    <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> execExit = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span>(argv != <span class="literal">NULL</span> &amp;&amp; argv[<span class="number">0</span>] != <span class="literal">NULL</span> &amp;&amp; <span class="built_in">strcmp</span>(argv[<span class="number">0</span>], <span class="string">&quot;exit&quot;</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        execExit = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 释放内存</span></span><br><span class="line">    <span class="keyword">if</span>(argv) &#123;</span><br><span class="line">        <span class="keyword">while</span>(argv[i] != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">free</span>(argv[i]);</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">free</span>(argv);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(execExit) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Bey~\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> execExit;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>        首先我们将cmdString转成字符串数组，然后判断它是不是<code>exit</code>命令，如果是直接退出，否则返回0。</p>
+<p>        现在我们有了对切换工作目录功能和退出程序功能的处理，接下来我们将这两个功能集成到我们上一篇文章《写一个自己的Unix Shell（2）将读入的字符变成命令》的程序中。我们只需在<code>execCommand()</code>函数中调用<code>handleChangeDirCommand()</code>函数和<code>handleExitCommand()</code>函数即可。代码如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">des:</span></span><br><span class="line"><span class="comment">    执行命令</span></span><br><span class="line"><span class="comment">param: </span></span><br><span class="line"><span class="comment">    cmdString[IN]: 命令字符串</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">execCommand</span><span class="params">(<span class="type">char</span> *cmdString)</span> &#123;</span><br><span class="line">    <span class="type">pid_t</span> pid = <span class="number">-1</span>;</span><br><span class="line">    <span class="comment">// 处理切换工作目录命令和退出命令</span></span><br><span class="line">    <span class="keyword">if</span>(handleChangeDirCommand(cmdString) || handleExitCommand(cmdString)) &#123;</span><br><span class="line">        <span class="comment">// 如果切换工作目录命令或退出命令，不往下执行，直接返回</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    pid = fork();</span><br><span class="line">    <span class="keyword">if</span>(pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;execCommand() fork() error\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 子进程</span></span><br><span class="line">        <span class="comment">// 获取argv数组</span></span><br><span class="line">        <span class="type">char</span> *<span class="type">const</span> *argv = <span class="literal">NULL</span>;</span><br><span class="line">        argv = parseCmdString(cmdString);</span><br><span class="line">        <span class="keyword">if</span>(argv == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;execCommand() parseCmdString() error\n&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 执行execvp函数调用其他程序</span></span><br><span class="line">        <span class="keyword">if</span>(execvp(argv[<span class="number">0</span>], argv) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;myshell&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent process</span></span><br><span class="line">        <span class="keyword">if</span>(wait(<span class="literal">NULL</span>) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;execCommand() wait() error\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>        如果是<code>cd</code>命令或<code>exit</code>命令我们就不再往下执行，直接返回（当然，如果是<code>exit</code>命令程序就直接结束了）。</p>
+<p>        下图是程序执行的样子。</p>
+<p><img src="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/Kapture%202024-08-27%20at%2000.33.48.gif"></p>
+<p>        现在我们可以切换当前工作目录和退出程序了。</p>
+<p>附：</p>
+<p>        欢迎大家关注我的微信公众号^_^。</p>
+<img title="" src="https://lcf-resources.oss-cn-beijing.aliyuncs.com/resources/2024-08-25_01-15.png" alt="" width="385" data-align="center">
+
+      
+    </div>
+    
+    
+    <div class="article-category">
+      
+      
+      
+        <b>Tags:</b>
+        <a class="article-tag-none-link" href="/tags/C%E8%AF%AD%E8%A8%80/" rel="tag">C语言</a>, <a class="article-tag-none-link" href="/tags/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84Unix-Shell/" rel="tag">写一个自己的Unix Shell</a>
+      
+    </div>
+    
+    
+  </div>
+</article>
+
+  
+<nav id="article-nav" class="article-nav">
+  
+    <span id="article-nav-newer" class="article-nav-link-wrap newer"></span>
+  
+  
+    <a href="/2024/08/17/%E5%86%99%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84UnixShell-2/" id="article-nav-older" class="article-nav-link-wrap older">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          写一个自己的Unix Shell（2）将读入的字符变成命令
+        
+      </div>
+    </a>
+  
+</nav>
+
+
+
+
+  <!-- <script>
+  var idcomments_acct = '00000000000000000000000000000001';
+  var idcomments_post_id;
+  var idcomments_post_url;
+  </script>
+  <span id="IDCommentsPostTitle" style="display:none"></span>
+  <script type='text/javascript' src='https://www.intensedebate.com/js/genericCommentWrapperV2.js'></script> -->
+  <div id="gitalk-container"></div>
+  <script src="/js/md5.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script>
+      var gitalk = new Gitalk({
+      clientID: 'Ov23lilyHLOdLBrFF3yy',
+      clientSecret: '7822a963c115ba84b0c9b85f311abd46afa24dc6',
+      repo: 'BlogCommends',
+      owner: 'longrichli',
+      admin: ['longrichli'],
+      id: md5(location.pathname),      // Ensure uniqueness and length less than 50
+      distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+      gitalk.render('gitalk-container')
+  </script>
+
+
+
+    </div>
+  </div>
+  
+  
+<link rel="stylesheet" href="/css/comments.css">
+
+
+
+
+
+
+<div id="settings-container">
+  <div id="dark-mode">dark</div>
+  <hr>
+  <div id="sans-font">sans</div>
+</div>
+<script type="text/javascript">
+let d=document,r=d.documentElement.style,f=r.setProperty.bind(r),l=localStorage,s=l.getItem('s')||(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),n=l.getItem('n'),m=d.getElementById("dark-mode"),b=()=>{f('--bg-color','#fafafa');f('--code-bg-color','#f4f4f4');f('--text-color','#212121');f('--secondary-color','#808080');f('--tertiary-color','#b0b0b0');f('--link-color','#b5c8cf');f('--link-hover-color','#618794');f('--link-bg-color','#dae4e7');f('--selection-color','#dae4e7');m.innerHTML="dark"},c=()=>{f('--bg-color','#212121');f('--code-bg-color','#292929');f('--text-color','#bbb');f('--secondary-color','#707070');f('--tertiary-color','#6e6e6e');f('--link-color','#4d6b75');f('--link-hover-color','#96b1bb');f('--link-bg-color','#5d828e');f('--selection-color','#acc1c9');m.innerHTML="light"},o=d.getElementById("sans-font"),e=()=>{f('--body-stack','"Lora", "Georgia", "Times New Roman", serif');o.innerHTML="sans"},g=()=>{f('--body-stack','"Lato", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "Verdana", sans-serif');o.innerHTML="serif"};m.onclick=()=>{if(s==2){s=1;l.setItem('s',s);c()}else{s=2;l.setItem('s',s);b()}};o.onclick=()=>{if(n==2){n=1;l.setItem('n',n);g()}else{n=2;l.setItem('n',n);e()}};if(!s){s=2;l.setItem('s',2)};if(s==1){c()};if(!n){n=2;l.setItem('n',2)};if(n==1){g()};
+</script>
+
+
+
+
+</body>
+</html>
